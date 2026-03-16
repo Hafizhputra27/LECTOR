@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme CSS Variables ─────────────────────────────────────────────────── */
+:root {
+  --bg:         #090b10;
+  --surface:    #0f1117;
+  --surface-2:  #161b27;
+  --text:       #e2e8f0;
+  --text-muted: #6b7280;
+  --border:     rgba(255,255,255,0.06);
+}
+
+.theme-light {
+  --bg:         #f4f5f9;
+  --surface:    #ffffff;
+  --surface-2:  #eef0f6;
+  --text:       #111827;
+  --text-muted: #6b7280;
+  --border:     rgba(0,0,0,0.08);
+}
+
+@layer base {
+  html {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  code, pre, kbd, samp {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Better text rendering for students */
+  p, li, span {
+    line-height: 1.7;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #7c6af7 #0f1117;
+  }
+
+  .theme-light .scrollbar-thin {
+    scrollbar-color: #7c6af7 #eef0f6;
+  }
+
+  /* Liquid glass effect */
+  .glass {
+    background: rgba(15, 17, 23, 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-light {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* macOS-style window dots */
+  .mac-dot-red   { background: #ff5f57; }
+  .mac-dot-yellow { background: #febc2e; }
+  .mac-dot-green  { background: #28c840; }
+
+  /* Theme-aware utilities */
+  .bg-theme       { background-color: var(--bg); }
+  .bg-surface-t   { background-color: var(--surface); }
+  .bg-surface-2t  { background-color: var(--surface-2); }
+  .text-theme     { color: var(--text); }
+  .text-muted-t   { color: var(--text-muted); }
+  .border-theme   { border-color: var(--border); }
+
+  /* Light mode glass override */
+  .theme-light .glass {
+    background: rgba(255,255,255,0.85);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .theme-light .glass-light {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  /* Light mode text overrides */
+  .theme-light .text-gray-400 { color: #4b5563; }
+  .theme-light .text-gray-500 { color: #6b7280; }
+  .theme-light .text-gray-600 { color: #9ca3af; }
+  .theme-light .text-white    { color: #111827; }
+  .theme-light .bg-gray-900\/60 { background: rgba(255,255,255,0.7); }
+  .theme-light .bg-gray-900\/40 { background: rgba(0,0,0,0.04); }
+  .theme-light .border-gray-700 { border-color: rgba(0,0,0,0.1); }
+  .theme-light .border-gray-800 { border-color: rgba(0,0,0,0.08); }
+  .theme-light .bg-gray-800\/50 { background: rgba(0,0,0,0.04); }
+  .theme-light .bg-gray-900    { background: #f8f9fc; }
+  .theme-light .bg-gray-800    { background: #eef0f6; }
+}
+
+/* 3D float animation for hero logo */
+@keyframes float3d {
+  0%, 100% {
+    transform: perspective(800px) rotateY(0deg) rotateX(0deg) translateZ(0px) translateY(0px);
+  }
+  25% {
+    transform: perspective(800px) rotateY(6deg) rotateX(-4deg) translateZ(10px) translateY(-10px);
+  }
+  50% {
+    transform: perspective(800px) rotateY(-4deg) rotateX(3deg) translateZ(16px) translateY(-18px);
+  }
+  75% {
+    transform: perspective(800px) rotateY(5deg) rotateX(5deg) translateZ(8px) translateY(-8px);
+  }
+}
+
+/* Hero text entrance animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.7s ease forwards;
+  opacity: 0;
+}
+
+/* Glow pulse for CTA buttons */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(124,106,247,0.4), 0 0 24px rgba(157,143,249,0.2); }
+  50%       { box-shadow: 0 0 20px rgba(124,106,247,0.65), 0 0 40px rgba(157,143,249,0.3); }
+}
+
+.btn-glow {
+  animation: glow-pulse 2.8s ease-in-out infinite;
+}
