@@ -51,7 +51,33 @@ Pastikan setiap soal memiliki tepat 4 pilihan (A, B, C, D) dan satu jawaban bena
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
-  const result = await model.generateContent(prompt)
+
+  // Retry up to 3x on 429/quota errors
+  let result
+  let lastErr: Error | null = null
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      result = await model.generateContent(prompt)
+      lastErr = null
+      break
+    } catch (err) {
+      lastErr = err instanceof Error ? err : new Error(String(err))
+      const is429 = lastErr.message.includes('429') || lastErr.message.includes('quota')
+      if (!is429 || attempt === 2) break
+      await new Promise((r) => setTimeout(r, (attempt + 1) * 2000))
+    }
+  }
+
+  if (!result) {
+    const errMsg = lastErr?.message ?? 'Gagal menghubungi AI'
+    const is429 = errMsg.includes('429') || errMsg.includes('quota')
+    throw new Error(
+      is429
+        ? 'Batas permintaan AI tercapai. Coba lagi dalam beberapa detik.'
+        : errMsg
+    )
+  }
+
   let text = result.response.text().trim()
 
   // Strip markdown code fences if present

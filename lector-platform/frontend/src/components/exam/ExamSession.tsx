@@ -42,7 +42,9 @@ export default function ExamSession({
           {answeredCount}/{questions.length} dijawab
         </span>
         <div className="flex items-center gap-2">
-          <span className="text-lg">⏱</span>
+          <svg className="w-5 h-5" style={{ color: isUrgent ? '#f87171' : '#9d8ff9' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           <span className={`font-heading text-2xl font-bold tabular-nums ${isUrgent ? 'text-red-400' : 'text-[#9d8ff9]'}`}>
             {formatTime(timeLeft)}
           </span>

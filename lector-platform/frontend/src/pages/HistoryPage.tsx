@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { getHistory, type ActivityRecord, type HistoryParams } from '../services/api'
+import React, { useEffect, useState, useCallback } from 'react'import { getHistory, type ActivityRecord, type HistoryParams } from '../services/api'
 
 type ActivityType = 'chat' | 'quiz' | 'exam' | 'summary'
 
@@ -10,11 +9,27 @@ const TYPE_LABELS: Record<ActivityType, string> = {
   summary: 'Ringkasan',
 }
 
-const TYPE_ICONS: Record<ActivityType, string> = {
-  chat: '💬',
-  quiz: '📚',
-  exam: '📝',
-  summary: '📄',
+const TYPE_ICONS: Record<ActivityType, React.ReactNode> = {
+  chat: (
+    <svg className="w-5 h-5 text-[#9d8ff9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+    </svg>
+  ),
+  quiz: (
+    <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    </svg>
+  ),
+  exam: (
+    <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+  ),
+  summary: (
+    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  ),
 }
 
 const TYPE_BADGE_COLORS: Record<ActivityType, string> = {
@@ -227,7 +242,7 @@ const RecordRow: React.FC<{ record: ActivityRecord }> = ({ record }) => {
       className="rounded-xl p-4 flex items-center gap-4"
       style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
     >
-      <span className="text-2xl flex-shrink-0">{TYPE_ICONS[type]}</span>
+      <span className="flex-shrink-0">{TYPE_ICONS[type]}</span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TYPE_BADGE_COLORS[type]}`}>
@@ -257,7 +272,11 @@ const RecordRow: React.FC<{ record: ActivityRecord }> = ({ record }) => {
 
 const EmptyState: React.FC = () => (
   <div className="flex flex-col items-center justify-center h-48 text-center">
-    <span className="text-4xl mb-3">📭</span>
+    <div className="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center" style={{ background: 'var(--surface-2)' }}>
+      <svg className="w-7 h-7" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+      </svg>
+    </div>
     <p className="text-sm font-body" style={{ color: 'var(--text-muted)' }}>Belum ada riwayat aktivitas.</p>
     <p className="text-xs mt-1 font-body" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
       Mulai belajar untuk melihat riwayat di sini.
