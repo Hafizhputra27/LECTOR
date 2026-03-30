@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react'import { getHistory, type ActivityRecord, type HistoryParams } from '../services/api'
+import React, { useEffect, useState, useCallback } from 'react'
+import { getHistory, type ActivityRecord, type HistoryParams } from '../services/api'
 
 type ActivityType = 'chat' | 'quiz' | 'exam' | 'summary'
 
