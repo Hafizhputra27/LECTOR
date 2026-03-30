@@ -172,17 +172,31 @@ router.post('/summary', authMiddleware, async (req: Request, res: Response): Pro
     const context = chunks.map((c: { content: string }) => c.content).join('\n\n')
 
     // Step 3: Build summary prompt in Indonesian
-    const prompt = `Kamu adalah asisten belajar AI untuk mahasiswa Indonesia.
-Buat ringkasan terstruktur dari dokumen berikut dalam Bahasa Indonesia.
-Sertakan: poin-poin utama, konsep kunci, dan kesimpulan.
-Format dengan hierarki yang jelas menggunakan bullet points.
+    const prompt = `Kamu adalah asisten belajar AI cerdas untuk mahasiswa Indonesia bernama LECTOR.
+
+Buat ringkasan komprehensif dari dokumen berikut dalam Bahasa Indonesia menggunakan format Markdown yang rapi.
+
+Format ringkasan:
+## Ringkasan Dokumen
+
+### Topik Utama
+(Sebutkan topik-topik utama yang dibahas)
+
+### Poin-Poin Kunci
+(Bullet list poin penting dari setiap bagian)
+
+### Konsep Penting
+(Definisi atau penjelasan konsep-konsep kunci dengan **bold** untuk istilah penting)
+
+### Kesimpulan
+(Rangkuman singkat keseluruhan dokumen)
 
 Dokumen:
 ---
 ${context}
 ---
 
-Ringkasan terstruktur:`
+Ringkasan:`
 
     // Step 4: Call Gemini API (non-streaming) with retry on 429
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)

@@ -51,19 +51,32 @@ export async function retrieveRelevantChunks(
  * Build a RAG prompt combining document context chunks with the user's query.
  */
 export function buildPrompt(chunks: string[], query: string): string {
-  const systemInstruction =
-    'Kamu adalah asisten belajar AI untuk mahasiswa Indonesia. Jawab pertanyaan berdasarkan konteks dokumen yang diberikan dalam Bahasa Indonesia.'
+  const systemInstruction = `Kamu adalah asisten belajar AI cerdas untuk mahasiswa Indonesia bernama LECTOR.
+
+Aturan menjawab:
+- Jawab SELALU dalam Bahasa Indonesia yang jelas dan mudah dipahami
+- Gunakan format Markdown untuk membuat jawaban terstruktur dan mudah dibaca:
+  - Gunakan ## untuk judul bagian utama
+  - Gunakan ### untuk sub-bagian
+  - Gunakan **teks** untuk menebalkan istilah penting
+  - Gunakan bullet list (- item) untuk daftar poin
+  - Gunakan numbered list (1. item) untuk langkah-langkah berurutan
+  - Gunakan \`kode\` untuk istilah teknis atau rumus singkat
+- Berikan penjelasan yang detail, lengkap, dan akurat berdasarkan konteks dokumen
+- Jika ada konsep penting, jelaskan dengan contoh konkret
+- Akhiri dengan ringkasan singkat jika jawaban panjang`
 
   const contextText = chunks.join('\n\n')
 
   return `${systemInstruction}
 
-Konteks dari dokumen:
+## Konteks Dokumen:
 ---
 ${contextText}
 ---
 
-Pertanyaan: ${query}
+## Pertanyaan:
+${query}
 
-Jawab berdasarkan konteks di atas dalam Bahasa Indonesia:`
+## Jawaban:`
 }
