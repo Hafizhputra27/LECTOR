@@ -1,5 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { supabaseAdmin } from '../services/supabase'
+import { generateText } from '../services/openrouter'
 
 export interface QuizQuestion {
   question: string
@@ -8,10 +8,6 @@ export interface QuizQuestion {
   explanation: string
 }
 
-/**
- * Fetches up to 10 chunks for a document and asks Gemini to generate
- * `questionCount` multiple-choice questions in Bahasa Indonesia.
- */
 export async function generateQuestionsForDocument(
   documentId: string,
   questionCount: number
@@ -49,39 +45,21 @@ Kembalikan HANYA array JSON (tanpa markdown, tanpa penjelasan tambahan) dengan f
 
 Pastikan setiap soal memiliki tepat 4 pilihan (A, B, C, D) dan satu jawaban benar.`
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
-
-  // Retry up to 3x on 429/quota errors
-  let result
-  let lastErr: Error | null = null
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      result = await model.generateContent(prompt)
-      lastErr = null
-      break
-    } catch (err) {
-      lastErr = err instanceof Error ? err : new Error(String(err))
-      const is429 = lastErr.message.includes('429') || lastErr.message.includes('quota')
-      if (!is429 || attempt === 2) break
-      await new Promise((r) => setTimeout(r, (attempt + 1) * 2000))
-    }
-  }
-
-  if (!result) {
-    const errMsg = lastErr?.message ?? 'Gagal menghubungi AI'
-    const is429 = errMsg.includes('429') || errMsg.includes('quota')
-    throw new Error(
-      is429
-        ? 'Batas permintaan AI tercapai. Coba lagi dalam beberapa detik.'
-        : errMsg
-    )
-  }
-
-  let text = result.response.text().trim()
+  let text = await generateText(prompt)
+  text = text.trim()
 
   // Strip markdown code fences if present
   text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
+
+  // Strip <think>...</think> tags (some models include reasoning)
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
+
+  // Find JSON array in response
+  const jsonStart = text.indexOf('[')
+  const jsonEnd = text.lastIndexOf(']')
+  if (jsonStart !== -1 && jsonEnd !== -1) {
+    text = text.slice(jsonStart, jsonEnd + 1)
+  }
 
   return JSON.parse(text) as QuizQuestion[]
 }
