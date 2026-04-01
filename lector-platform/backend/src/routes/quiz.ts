@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import { authMiddleware } from '../middleware/auth'
 import { supabaseAdmin } from '../services/supabase'
 import { calculateQuizScore, calculateQuizXP } from '../services/quizScoring'
-import { awardXP, updateStreak } from '../services/gamificationEngine'
+import { updateStreak, checkAndAwardBadges } from '../services/gamificationEngine'
 import { generateQuestionsForDocument, QuizQuestion } from './quizHelpers'
 
 const router = Router()
@@ -96,8 +96,8 @@ router.post('/submit', authMiddleware, async (req: Request, res: Response): Prom
       xp_earned: xpEarned,
     })
 
-    await awardXP(userId, 'quiz_completed', score)
     await updateStreak(userId)
+    const newTitles = await checkAndAwardBadges(userId)
 
     res.json({
       score,
@@ -105,6 +105,7 @@ router.post('/submit', authMiddleware, async (req: Request, res: Response): Prom
       correctCount,
       totalCount: questions.length,
       questions,
+      newTitles,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Terjadi kesalahan'

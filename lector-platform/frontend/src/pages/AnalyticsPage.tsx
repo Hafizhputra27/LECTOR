@@ -2,26 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { getAnalytics, type AnalyticsSummary } from '../services/api'
 import ActivityChart from '../components/analytics/ActivityChart'
 import TopicPerformance from '../components/analytics/TopicPerformance'
-import XPBar from '../components/gamification/XPBar'
 import BadgeGrid from '../components/gamification/BadgeGrid'
 import StreakDisplay from '../components/gamification/StreakDisplay'
 import { useGamificationStore } from '../store/gamificationStore'
 
-// SVG icon components (defined as functions to avoid JSX-outside-component issues)
-function IconXP() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
-  )
-}
-function IconLevel() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-    </svg>
-  )
-}
 function IconStreak() {
   return (
     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -43,12 +27,18 @@ function IconScore() {
     </svg>
   )
 }
+function IconBadge() {
+  return (
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+    </svg>
+  )
+}
 
 const AnalyticsPage: React.FC = () => {
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
   const gamProfile = useGamificationStore((s) => s.profile)
 
   useEffect(() => {
@@ -93,23 +83,19 @@ const AnalyticsPage: React.FC = () => {
     )
   }
 
+  const earnedTitles = gamProfile?.badges?.filter((b) => !!b.earnedAt).length ?? 0
+
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-4xl mx-auto">
       <h1 className="text-xl font-heading font-bold" style={{ color: 'var(--text)' }}>Analitik Pribadi</h1>
 
-      {/* Metric cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <MetricCard label="Total XP" value={analytics.totalXP.toLocaleString('id-ID')} icon={<IconXP />} color="text-[#7c6af7]" />
-        <MetricCard label="Level" value={String(analytics.currentLevel)} icon={<IconLevel />} color="text-[#9d8ff9]" />
+      {/* Metric cards — no XP/Level */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MetricCard label="Streak" value={`${analytics.currentStreak} hari`} icon={<IconStreak />} color="text-[#f6ad55]" />
         <MetricCard label="Quiz Selesai" value={String(analytics.quizzesCompleted)} icon={<IconQuiz />} color="text-green-400" />
         <MetricCard label="Rata-rata Skor" value={`${analytics.averageScore.toFixed(1)}%`} icon={<IconScore />} color="text-[#9d8ff9]" />
+        <MetricCard label="Gelar Diraih" value={String(earnedTitles)} icon={<IconBadge />} color="text-[#7c6af7]" />
       </div>
-
-      {/* XP Progress */}
-      <SectionCard title="Progres Level">
-        <XPBar xp={analytics.totalXP} level={analytics.currentLevel} />
-      </SectionCard>
 
       {/* Streak */}
       <SectionCard title="Streak Harian">
@@ -126,8 +112,8 @@ const AnalyticsPage: React.FC = () => {
         <TopicPerformance topics={analytics.topicPerformance} />
       </SectionCard>
 
-      {/* Badge Grid */}
-      <SectionCard title="Badge & Pencapaian">
+      {/* Title/Badge Grid */}
+      <SectionCard title="Pencapaian & Gelar">
         <BadgeGrid badges={gamProfile?.badges ?? []} />
       </SectionCard>
     </div>
@@ -135,10 +121,7 @@ const AnalyticsPage: React.FC = () => {
 }
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div
-    className="rounded-xl p-4"
-    style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-  >
+  <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
     <h2 className="text-sm font-semibold mb-3 font-heading" style={{ color: 'var(--text-muted)' }}>{title}</h2>
     {children}
   </div>

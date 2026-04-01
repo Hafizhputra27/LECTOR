@@ -2,42 +2,38 @@ import { create } from 'zustand'
 
 export interface Badge {
   id: string
-  name: string
-  description: string
+  name: string        // title, e.g. "Pelajar Tekun"
+  description: string // cara mendapatkan
   iconUrl?: string
-  earnedAt?: Date
+  earnedAt?: Date | string
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary'
 }
 
 export interface GamificationProfile {
   userId: string
-  xp: number
-  level: number
   streak: number
   lastActiveDate?: string
   badges: Badge[]
+  quizzesCompleted: number
+  averageScore: number
 }
 
 interface GamificationState {
   profile: GamificationProfile | null
   isLoading: boolean
-  levelUpNotification: number | null
+  newTitleNotification: string | null
   setProfile: (profile: GamificationProfile) => void
-  updateXP: (xp: number, level: number) => void
   updateStreak: (streak: number) => void
   addBadge: (badge: Badge) => void
-  setLevelUpNotification: (level: number | null) => void
+  setNewTitleNotification: (title: string | null) => void
   setLoading: (loading: boolean) => void
 }
 
 export const useGamificationStore = create<GamificationState>((set) => ({
   profile: null,
   isLoading: false,
-  levelUpNotification: null,
+  newTitleNotification: null,
   setProfile: (profile) => set({ profile }),
-  updateXP: (xp, level) =>
-    set((state) => ({
-      profile: state.profile ? { ...state.profile, xp, level } : null,
-    })),
   updateStreak: (streak) =>
     set((state) => ({
       profile: state.profile ? { ...state.profile, streak } : null,
@@ -48,6 +44,6 @@ export const useGamificationStore = create<GamificationState>((set) => ({
         ? { ...state.profile, badges: [...state.profile.badges, badge] }
         : null,
     })),
-  setLevelUpNotification: (levelUpNotification) => set({ levelUpNotification }),
+  setNewTitleNotification: (newTitleNotification) => set({ newTitleNotification }),
   setLoading: (isLoading) => set({ isLoading }),
 }))

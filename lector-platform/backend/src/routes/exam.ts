@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import { authMiddleware } from '../middleware/auth'
 import { supabaseAdmin } from '../services/supabase'
 import { calculateQuizScore } from '../services/quizScoring'
-import { awardXP, updateStreak, XP_REWARDS } from '../services/gamificationEngine'
+import { updateStreak, checkAndAwardBadges } from '../services/gamificationEngine'
 import { generateQuestionsForDocument } from './quizHelpers'
 
 const router = Router()
@@ -87,8 +87,7 @@ router.post('/submit', authMiddleware, async (req: Request, res: Response): Prom
     )
 
     const score = calculateQuizScore(correctnessArray)
-    const xpEarned =
-      XP_REWARDS.exam_completed_base + XP_REWARDS.exam_score_bonus(score)
+    const xpEarned = 0
     const correctCount = correctnessArray.filter(Boolean).length
     const completedAt = new Date().toISOString()
 
@@ -102,18 +101,18 @@ router.post('/submit', authMiddleware, async (req: Request, res: Response): Prom
       type: 'exam',
       document_id: examSession.document_id,
       score,
-      xp_earned: xpEarned,
+      xp_earned: 0,
     })
 
-    await awardXP(userId, 'exam_completed', score)
     await updateStreak(userId)
+    const newTitles = await checkAndAwardBadges(userId)
 
     res.json({
       score,
-      xpEarned,
       correctCount,
       totalCount: questions.length,
       questions,
+      newTitles,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Terjadi kesalahan'

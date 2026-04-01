@@ -1,23 +1,25 @@
--- ============================================================
--- Seed Data: badges
--- LECTOR Platform - Initial badge definitions
--- ============================================================
+-- Seed badges as titles/achievements
+-- trigger_type: 'streak' | 'quiz_count' | 'perfect_score' | 'xp_milestone'
+-- trigger_value: threshold number
 
-INSERT INTO badges (name, description, icon_url, trigger_type, trigger_value) VALUES
+INSERT INTO badges (name, description, trigger_type, trigger_value) VALUES
+  -- Streak titles
+  ('Pelajar Konsisten',   'Belajar 3 hari berturut-turut',          'streak',       3),
+  ('Pejuang Mingguan',    'Belajar 7 hari berturut-turut',          'streak',       7),
+  ('Dedikasi Tinggi',     'Belajar 14 hari berturut-turut',         'streak',       14),
+  ('Legenda Belajar',     'Belajar 30 hari berturut-turut',         'streak',       30),
 
-  -- Streak badges
-  ('Streak Pemula',    'Belajar selama 3 hari berturut-turut',  NULL, 'streak',        3),
-  ('Streak Mingguan',  'Belajar selama 7 hari berturut-turut',  NULL, 'streak',        7),
-  ('Streak Master',    'Belajar selama 30 hari berturut-turut', NULL, 'streak',        30),
+  -- Quiz count titles
+  ('Pemula Aktif',        'Menyelesaikan 1 quiz pertama',           'quiz_count',   1),
+  ('Penjelajah Ilmu',     'Menyelesaikan 5 quiz',                   'quiz_count',   5),
+  ('Juara Quiz',          'Menyelesaikan 10 quiz',                  'quiz_count',   10),
+  ('Master Latihan',      'Menyelesaikan 25 quiz',                  'quiz_count',   25),
 
-  -- Quiz count badges
-  ('Quiz Pertama',     'Menyelesaikan quiz pertamamu',          NULL, 'quiz_count',    1),
-  ('Quiz Enthusiast',  'Menyelesaikan 10 quiz',                 NULL, 'quiz_count',    10),
-  ('Quiz Master',      'Menyelesaikan 50 quiz',                 NULL, 'quiz_count',    50),
+  -- Perfect score titles
+  ('Nilai Sempurna',      'Mendapatkan skor 100% dalam satu quiz',  'perfect_score', 1),
 
-  -- Perfect score badge
-  ('Nilai Sempurna',   'Mendapatkan skor 100 pada quiz atau ujian', NULL, 'perfect_score', 100),
+  -- XP milestone titles (kept for compatibility, won't show in UI)
+  ('Rajin Belajar',       'Mengumpulkan 100 poin aktivitas',        'xp_milestone', 100),
+  ('Tekun & Gigih',       'Mengumpulkan 500 poin aktivitas',        'xp_milestone', 500)
 
-  -- XP milestone badges
-  ('Pelajar Rajin',    'Mengumpulkan total 1.000 XP',           NULL, 'xp_milestone',  1000),
-  ('Scholar',          'Mengumpulkan total 5.000 XP',           NULL, 'xp_milestone',  5000);
+ON CONFLICT DO NOTHING;

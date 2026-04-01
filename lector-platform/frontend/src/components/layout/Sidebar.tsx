@@ -3,21 +3,6 @@ import { useAuthStore } from '../../store/authStore'
 import { useGamificationStore } from '../../store/gamificationStore'
 import { supabase } from '../../services/supabase'
 
-const LEVEL_THRESHOLDS = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500]
-
-function getXPProgress(xp: number, level: number) {
-  const currentLevelXP = LEVEL_THRESHOLDS[level - 1] ?? 0
-  const nextLevelXP = LEVEL_THRESHOLDS[level] ?? LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1]
-  if (level >= LEVEL_THRESHOLDS.length) return { current: xp, next: nextLevelXP, percent: 100 }
-  const progress = xp - currentLevelXP
-  const range = nextLevelXP - currentLevelXP
-  return {
-    current: xp,
-    next: nextLevelXP,
-    percent: Math.min(100, Math.floor((progress / range) * 100)),
-  }
-}
-
 // SVG icon components for nav
 const NavIcons = {
   chat: (
@@ -75,7 +60,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     .toUpperCase()
     .slice(0, 2)
 
-  const xpInfo = profile ? getXPProgress(profile.xp, profile.level) : null
+  // Get the most recently earned badge as active title
+  const activeTitle = profile?.badges?.length
+    ? [...profile.badges].sort((a, b) => {
+        const da = a.earnedAt ? new Date(a.earnedAt as string).getTime() : 0
+        const db = b.earnedAt ? new Date(b.earnedAt as string).getTime() : 0
+        return db - da
+      })[0]
+    : null
 
   async function handleSignOut() {
     await supabase.auth.signOut()
@@ -151,32 +143,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold font-body truncate" style={{ color: 'var(--text)' }}>{displayName}</p>
-              {profile && (
-                <span className="inline-block text-xs px-1.5 py-0.5 rounded-md bg-[#f6ad55]/15 text-[#f6ad55] font-mono font-medium">
-                  Lv.{profile.level}
+              {activeTitle && (
+                <span className="inline-block text-xs px-1.5 py-0.5 rounded-md bg-[#7c6af7]/15 text-[#9d8ff9] font-body font-medium truncate max-w-full">
+                  {activeTitle.name}
                 </span>
               )}
             </div>
           </div>
-
-          {/* XP bar */}
-          {xpInfo && (
-            <div className="space-y-1 px-1">
-              <div className="flex justify-between text-xs text-gray-500 font-body">
-                <span>{xpInfo.current} XP</span>
-                <span>{xpInfo.next} XP</span>
-              </div>
-              <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{
-                    width: `${xpInfo.percent}%`,
-                    background: 'linear-gradient(90deg, #7c6af7, #9d8ff9)',
-                  }}
-                />
-              </div>
-            </div>
-          )}
 
           {profile && (
             <p className="text-xs text-gray-500 font-body px-1 flex items-center gap-1.5">
