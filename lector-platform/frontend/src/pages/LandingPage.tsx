@@ -555,23 +555,11 @@ function CaraKerjaSection() {
 }
 
 // ─── Tim Pengembang ───────────────────────────────────────────────────────────
-// Avatar SVG for team
-function TeamAvatar({ index }: { index: number }) {
-  const colors = ['from-[#7c6af7] to-[#9d8ff9]', 'from-[#9d8ff9] to-[#f6ad55]', 'from-[#f6ad55] to-[#7c6af7]', 'from-green-400 to-[#9d8ff9]']
-  return (
-    <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 bg-gradient-to-br ${colors[index]} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    </div>
-  )
-}
-
 const team = [
-  { name: 'Ahmad Hafizh Karunia Putra', role: 'Ketua Tim · 241111001' },
-  { name: 'Alexander Saputra Nadeak', role: 'Anggota · 241111000' },
-  { name: 'Muhammad Fachri Ramadhan', role: 'Anggota · 241111000' },
-  { name: 'Nevan Nurrahman', role: 'Anggota · 241111000' },
+  { name: 'Ahmad Hafizh Karunia Putra', npm: '241111001', role: 'Project Manager', photo: '/foto_ahmad.png' },
+  { name: 'Alexander Saputra Nadeak', npm: '241111022', role: 'UI/UX Designer', photo: '/foto_alexander.png' },
+  { name: 'Muhammad Fachri Ramadhan', npm: '241111003', role: 'Front-End Developer', photo: '/foto_muhammad.png' },
+  { name: 'Nevan Nurrahman', npm: '241111019', role: 'Back-End Developer', photo: '/foto_nevan.png' },
 ]
 
 function TimSection() {
@@ -588,12 +576,32 @@ function TimSection() {
           {team.map((m, i) => (
             <div
               key={m.name}
-              className={`rounded-2xl p-6 text-center group hover:border-[#7c6af7]/30 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#7c6af7]/8 transition-all duration-300 border ${isLight ? 'bg-white border-gray-200' : 'bg-background border-white/5'}`}
+              className={`rounded-2xl overflow-hidden text-center group hover:border-[#7c6af7]/30 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#7c6af7]/8 transition-all duration-300 border ${isLight ? 'bg-white border-gray-200' : 'bg-background border-white/5'}`}
               style={{ transitionDelay: `${i * 0.06}s` }}
             >
-              <TeamAvatar index={i} />
-              <h3 className={`font-heading text-base font-semibold mb-1 group-hover:text-[#7c6af7] transition-colors duration-200 ${isLight ? 'text-gray-900' : 'text-white'}`}>{m.name}</h3>
-              <p className={`font-body text-xs ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>{m.role}</p>
+              {/* Photo */}
+              <div className="w-full aspect-square overflow-hidden">
+                <img
+                  src={m.photo}
+                  alt={m.name}
+                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    const t = e.currentTarget
+                    t.style.display = 'none'
+                    const parent = t.parentElement
+                    if (parent) {
+                      parent.style.background = 'linear-gradient(135deg, #7c6af7, #9d8ff9)'
+                      parent.innerHTML = `<div class="w-full h-full flex items-center justify-center"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>`
+                    }
+                  }}
+                />
+              </div>
+              {/* Info */}
+              <div className="p-4">
+                <h3 className={`font-heading text-sm font-semibold mb-0.5 group-hover:text-[#7c6af7] transition-colors duration-200 ${isLight ? 'text-gray-900' : 'text-white'}`}>{m.name}</h3>
+                <p className="font-body text-xs text-[#9d8ff9] font-medium">{m.role}</p>
+                <p className={`font-mono text-xs mt-0.5 ${isLight ? 'text-gray-400' : 'text-gray-600'}`}>{m.npm}</p>
+              </div>
             </div>
           ))}
         </div>
